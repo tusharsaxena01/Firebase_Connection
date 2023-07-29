@@ -56,7 +56,7 @@ public class RegisterActivity extends AppCompatActivity {
                         }else{
                             Toast.makeText(RegisterActivity.this, "User Not Created", Toast.LENGTH_SHORT).show();
 //                            Toast.makeText(RegisterActivity.this, task.getException().toString(), Toast.LENGTH_SHORT).show();
-                            binding.etEmail.setError(task.getException().toString());
+                            binding.etEmail.setError(task.getException().getMessage().toString());
                         }
                     }
                 });
