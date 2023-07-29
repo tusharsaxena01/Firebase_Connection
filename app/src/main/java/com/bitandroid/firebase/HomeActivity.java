@@ -3,7 +3,10 @@ package com.bitandroid.firebase;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
 
 import com.bitandroid.firebase.databinding.ActivityHomeBinding;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,6 +29,16 @@ public class HomeActivity extends AppCompatActivity {
 
         setContentView(binding.getRoot());
 
+        binding.btnLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(HomeActivity.this, "Logout", Toast.LENGTH_SHORT).show();
+                firebaseAuth.signOut();
+                Intent loginIntent = new Intent(HomeActivity.this, LoginActivity.class);
+                startActivity(loginIntent);
+            }
+        });
+
         @NonNull
         String uuid = firebaseAuth.getCurrentUser().getUid();
 
@@ -35,6 +48,7 @@ public class HomeActivity extends AppCompatActivity {
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        binding.pbLoading.setVisibility(View.VISIBLE);
                         UserData data = snapshot.getValue(UserData.class);
                         if(data != null) {
                             binding.tvName.setText(data.name);
@@ -42,6 +56,7 @@ public class HomeActivity extends AppCompatActivity {
                             binding.tvCity.setText(data.city);
                             binding.tvMobile.setText(data.mobileNo);
                         }
+                        binding.pbLoading.setVisibility(View.GONE);
                     }
 
                     @Override
