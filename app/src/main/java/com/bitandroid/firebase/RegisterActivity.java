@@ -19,6 +19,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.UploadTask;
 
 
 public class RegisterActivity extends AppCompatActivity {
@@ -30,14 +31,35 @@ public class RegisterActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == Activity.RESULT_OK) {
+            assert data != null;
             Uri uri = data.getData();
 
             binding.ivDp.setImageURI(uri);
+            uploadImage(uri);
         }
+    }
+
+    private void uploadImage(Uri uri) {
+
+        firebaseStorage.getReference()
+                .child("dp")
+                .putFile(uri)
+                .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                        if(task.isSuccessful()){
+                            Toast.makeText(RegisterActivity.this, "Picture Uploaded", Toast.LENGTH_SHORT).show();
+                        }else {
+                            Toast.makeText(RegisterActivity.this, "Image Not Uploaded", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
     }
 
     @Override
