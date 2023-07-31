@@ -1,19 +1,24 @@
 package com.bitandroid.firebase;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
 import com.bitandroid.firebase.databinding.ActivityRegisterBinding;
+import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
 
 
 public class RegisterActivity extends AppCompatActivity {
@@ -21,6 +26,20 @@ public class RegisterActivity extends AppCompatActivity {
     ActivityRegisterBinding binding;
     FirebaseAuth firebaseAuth;
     FirebaseDatabase firebaseDatabase;
+    FirebaseStorage firebaseStorage;
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == Activity.RESULT_OK) {
+            Uri uri = data.getData();
+
+            binding.ivDp.setImageURI(uri);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,8 +48,20 @@ public class RegisterActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseStorage = FirebaseStorage.getInstance();
 
         Intent loginIntent = new Intent(RegisterActivity.this, LoginActivity.class);
+
+        binding.ivDp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ImagePicker.with(RegisterActivity.this)
+                        .crop()	    			//Crop image(Optional), Check Customization for more option
+                        .compress(1024)			//Final image size will be less than 1 MB(Optional)
+                        .maxResultSize(1080, 1080)	//Final image resolution will be less than 1080 x 1080(Optional)
+                        .start();
+            }
+        });
 
         binding.btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,7 +126,6 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 });
 
+
     }
-
-
 }
